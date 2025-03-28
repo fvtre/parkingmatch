@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Navigation, MapPin, AlertTriangle, RefreshCw } from 'lucide-react';
 
 // Usar variable de entorno para la API key
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+const GOOGLE_MAPS_API_KEY = "AIzaSyB0HrQff9pm3w9ebYV-XmTiL3WVzlL6eRc"; 
 
 interface ParkingSpot {
   id: string;

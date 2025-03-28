@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Car, Clock, MapPin } from "lucide-react";
-const GOOGLE_MAPS_API_KEY = "AIzaSyCXQI2698beKX3RoxhDBQWI6-Qp3FJFWS8"; 
-
+const GOOGLE_MAPS_API_KEY = "AIzaSyB0HrQff9pm3w9ebYV-XmTiL3WVzlL6eRc"; 
 
 interface ParkingSpot {
   id: string;
