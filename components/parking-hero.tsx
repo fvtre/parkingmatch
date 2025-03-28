@@ -19,7 +19,7 @@ export function ParkingHero() {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <div className="relative w-full max-w-[500px] aspect-video rounded-xl overflow-hidden shadow-2xl">
+            <div className="relative w-full w-[600px] h-[600px]aspect-video rounded-xl overflow-hidden shadow-2xl">
               <ParkingMap /> {/* Aquí se coloca el mapa en lugar de la imagen */}
             </div>
           </div>

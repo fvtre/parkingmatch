@@ -66,7 +66,7 @@ export default function DashboardPage() {
             <span className="text-xl font-bold">ParkMatch</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/profile" className="text-sm font-medium hover:text-blue-600 flex items-center gap-1">
+            <Link href="/mi-perfil" className="text-sm font-medium hover:text-blue-600 flex items-center gap-1">
               <User className="h-4 w-4" /> Profile
             </Link>
             <Link href="/settings" className="text-sm font-medium hover:text-blue-600 flex items-center gap-1">

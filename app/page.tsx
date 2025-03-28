@@ -32,7 +32,7 @@ export default function Home() {
             <Link href="#testimonials" className="text-sm font-medium hover:text-blue-600">
               Clientes
             </Link>
-            <Link href="#contact" className="text-sm font-medium hover:text-blue-600">
+            <Link href="/contactanos" className="text-sm font-medium hover:text-blue-600">
               Contactanos
             </Link>
           </nav>
@@ -55,7 +55,7 @@ export default function Home() {
           <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-1 gap-6">
             {/* Lista de estacionamientos */}
             <div className="w-full col-span-1">
-              <Card className="h-[400px] md:h-[500px] overflow-hidden">
+              <Card className="h-[300px] md:h-[400px] overflow-hidden">
                 <CardHeader>
                   <CardTitle>Lugares disponibles</CardTitle>
                 </CardHeader>
