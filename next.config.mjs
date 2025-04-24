@@ -1,3 +1,12 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development'
+});
+
 let userConfig = undefined
 try {
   userConfig = await import('./v0-user-next.config')
@@ -13,7 +22,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  reactStrictMode: true,
   images: {
+    domains: ['firebasestorage.googleapis.com'],
     unoptimized: true,
   },
   experimental: {

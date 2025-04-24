@@ -1,113 +1,144 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Clock, Car, User, Settings, LogOut } from 'lucide-react'
 import { useAuth } from "@/contexts/AuthContext"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { MapPin, Search, User, LogOut } from "lucide-react"
+import Link from "next/link"
 
 export default function DashboardPage() {
+  const { currentUser, loading, logout } = useAuth()
   const router = useRouter()
-  const { logout } = useAuth() // Importa la función logout del contexto
-  const [activeSpots, setActiveSpots] = useState([
-    {
-      id: 1,
-      type: "offering",
-      location: "123 Main St, Downtown",
-      time: "Leaving at 5:30 PM",
-      status: "Waiting for match",
-    },
-  ])
 
-  const [pastSpots, setPastSpots] = useState([
-    {
-      id: 101,
-      type: "found",
-      location: "456 Market St, Downtown",
-      time: "March 12, 2025",
-      matchedWith: "Jamie L.",
-    },
-    {
-      id: 102,
-      type: "offering",
-      location: "789 Park Ave, Downtown",
-      time: "March 10, 2025",
-      matchedWith: "Alex S.",
-    },
-  ])
+  // Redirigir si no hay usuario autenticado
+  useEffect(() => {
+    if (!loading && !currentUser) {
+      router.push("/login")
+    }
+  }, [currentUser, loading, router])
 
-  // Función para manejar el logout
   const handleLogout = async () => {
     try {
       await logout()
-      router.push('/login')
+      router.push("/login")
     } catch (error) {
       console.error("Error al cerrar sesión:", error)
     }
   }
 
-  const cancelSpot = (id: number) => {
-    setActiveSpots(activeSpots.filter((spot) => spot.id !== id))
+  // Mostrar pantalla de carga mientras se verifica la autenticación
+  if (loading || !currentUser) {
+    return (
+      <div className="container mx-auto py-10 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="container flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center gap-2">
-          <img
-              src="/images/logopark1.png"
-              alt="Logo"
-              className="h-20 w-20 object-cover"
-            />
-            <span className="text-xl font-bold">ParkMatch</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/mi-perfil" className="text-sm font-medium hover:text-blue-600 flex items-center gap-1">
-              <User className="h-4 w-4" /> Profile
-            </Link>
-            <Link href="/settings" className="text-sm font-medium hover:text-blue-600 flex items-center gap-1">
-              <Settings className="h-4 w-4" /> Settings
-            </Link>
-            {/* Botón de logout */}
-            <button 
-              onClick={handleLogout} 
-              className="text-sm font-medium hover:text-red-600 flex items-center gap-1"
-            >
-              <LogOut className="h-4 w-4" /> Logout
-            </button>
-          </div>
+    <div className="container mx-auto py-10 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold mb-2">
+            Bienvenido a ParkMatch, {currentUser.displayName || currentUser.email?.split("@")[0]}
+          </h1>
+          <p className="text-gray-600">¿Qué te gustaría hacer hoy?</p>
         </div>
-      </header>
 
-      <main className="container py-8">
-        {/* Resto del contenido del dashboard... */}
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <div className="flex gap-4">
-              <Link href="/find-spot">
-                <Button variant="outline">Find a Spot</Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Search className="h-5 w-5 text-blue-500" />
+                Buscar Estacionamiento
+              </CardTitle>
+              <CardDescription>Encuentra lugares disponibles cerca de ti</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">
+                Busca estacionamientos disponibles en tu zona
+              </p>
+              <Link href="/buscar-estacionamiento">
+                <Button className="w-full">Buscar Estacionamiento</Button>
               </Link>
-              <Link href="/offer-spot">
-                <Button>Offer Your Spot</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-blue-500" />
+                Publicar Estacionamiento
+              </CardTitle>
+              <CardDescription>Ofrece un espacio o publica tu estacionamiento y genera ganancias</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">
+                Publica estacionamientos y ayuda a conductores que lo necesitan
+              </p>
+              <Link href="/publicar-estacionamiento">
+                <Button className="w-full">Publicar Estacionamiento</Button>
               </Link>
-            </div>
-          </div>
-
-          <Tabs defaultValue="active" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="active">Active Spots</TabsTrigger>
-              <TabsTrigger value="history">History</TabsTrigger>
-            </TabsList>
-
-            {/* El resto del código existente... */}
-          </Tabs>
+            </CardContent>
+          </Card>
         </div>
-      </main>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <User className="h-5 w-5 text-blue-500" />
+                Mi Perfil
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">Administra tu información personal y preferencias de cuenta.</p>
+              <Link href="/mi-perfil">
+                <Button variant="outline" className="w-full">
+                  Ver Perfil
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-blue-500" />
+                Mis Estacionamientos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">Gestiona los estacionamientos que has publicado.</p>
+              <Link href="/mis-estacionamientos">
+                <Button variant="outline" className="w-full">
+                  Ver Mis Estacionamientos
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <LogOut className="h-5 w-5 text-red-500" />
+                Cerrar Sesión
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">Cierra tu sesión actual en ParkMatch.</p>
+              <Button variant="destructive" className="w-full" onClick={handleLogout}>
+                Cerrar Sesión
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }

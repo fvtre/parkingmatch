@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useState , useEffect, type FormEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,8 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const { login, signInWithGoogle, signInWithFacebook } = useAuth()
 
+
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError("")
@@ -28,7 +30,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
-      router.push("/dashboard")
+      router.push("/buscar-estacionamiento")
     } catch (error) {
       setError("Error al iniciar sesión: " + (error as Error).message)
     } finally {
@@ -40,7 +42,7 @@ export default function LoginPage() {
     setError("")
     try {
       await signInWithGoogle()
-      router.push("/dashboard")
+      router.push("/buscar-estacionamiento")
     } catch (error) {
       setError("Error al iniciar sesión con Google: " + (error as Error).message)
     }
@@ -50,7 +52,7 @@ export default function LoginPage() {
     setError("");
     try {
       await signInWithFacebook();
-      router.push("/dashboard");
+      router.push("/buscar-estacionamiento");
     } catch (error) {
       console.error("Error al iniciar sesión con Facebook:", error);
       setError("No se pudo iniciar sesión con Facebook. Verifica tu cuenta e intenta de nuevo.");

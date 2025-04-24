@@ -1,90 +1,166 @@
 "use client"
 
-// contexts/AuthContext.tsx
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { 
-  User,
-  UserCredential,
-  onAuthStateChanged, 
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import {
+  type User,
+  type UserCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPopup, 
   signOut,
-  updateProfile
-} from 'firebase/auth';
-import { auth, googleAuthProvider, facebookAuthProvider } from '@/lib/firebase';
+  signInWithPopup,
+  updateProfile,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth"
+import { auth, googleAuthProvider, facebookAuthProvider } from "@/lib/firebase"
 
+// Definir la interfaz para el contexto de autenticación
 interface AuthContextType {
-  currentUser: User | null;
-  signup: (email: string, password: string, name: string) => Promise<User>;
-  login: (email: string, password: string) => Promise<UserCredential>;
-  signInWithGoogle: () => Promise<UserCredential>;
-  signInWithFacebook: () => Promise<UserCredential>;
-  logout: () => Promise<void>;
+  user: User | null
+  currentUser: User | null // Alias para user para mantener compatibilidad
+  loading: boolean
+  signup: (email: string, password: string, displayName: string) => Promise<UserCredential>
+  signin: (email: string, password: string) => Promise<UserCredential>
+  login: (email: string, password: string) => Promise<UserCredential> // Alias para signin
+  signInWithGoogle: () => Promise<UserCredential>
+  signInWithFacebook: () => Promise<UserCredential>
+  logout: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-export const useAuth = () => useContext(AuthContext);
+// Crear el contexto con un valor por defecto
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  currentUser: null,
+  loading: true,
+  signup: async () => {
+    throw new Error("AuthContext not initialized")
+  },
+  signin: async () => {
+    throw new Error("AuthContext not initialized")
+  },
+  login: async () => {
+    throw new Error("AuthContext not initialized")
+  },
+  signInWithGoogle: async () => {
+    throw new Error("AuthContext not initialized")
+  },
+  signInWithFacebook: async () => {
+    throw new Error("AuthContext not initialized")
+  },
+  logout: async () => {
+    throw new Error("AuthContext not initialized")
+  },
+})
 
 interface AuthProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
+  // Configurar persistencia al cargar el componente
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
+    const setupPersistence = async () => {
+      try {
+        await setPersistence(auth, browserLocalPersistence)
+        console.log("Persistencia configurada correctamente")
+      } catch (error) {
+        console.error("Error al configurar persistencia:", error)
+      }
+    }
 
-    return unsubscribe;
-  }, []);
-  
+    setupPersistence()
+  }, [])
 
-  // Registrar usuario
-  const signup = async (email: string, password: string, name: string): Promise<User> => {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(result.user, { displayName: name });
-    return result.user;
-  };
+  // Escuchar cambios en el estado de autenticación
+  useEffect(() => {
+    console.log("Configurando listener de autenticación")
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Estado de autenticación cambiado:", currentUser ? "Usuario autenticado" : "No autenticado")
+      setUser(currentUser)
+      setLoading(false)
+    })
 
-  // Iniciar sesión
-  const login = (email: string, password: string): Promise<UserCredential> => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
+    // Limpiar el listener al desmontar
+    return () => {
+      console.log("Limpiando listener de autenticación")
+      unsubscribe()
+    }
+  }, [])
 
-  const signInWithGoogle = (): Promise<UserCredential> => {
-    return signInWithPopup(auth, googleAuthProvider)
+  const signup = async (email: string, password: string, displayName: string): Promise<UserCredential> => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(userCredential.user, { displayName })
+      setUser(userCredential.user)
+      return userCredential
+    } catch (error) {
+      console.error("Error en signup:", error)
+      throw error
+    }
   }
 
-  const signInWithFacebook = (): Promise<UserCredential> => {
-    return signInWithPopup(auth, facebookAuthProvider);
-  };
+  const signin = async (email: string, password: string): Promise<UserCredential> => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      setUser(userCredential.user)
+      return userCredential
+    } catch (error) {
+      console.error("Error en signin:", error)
+      throw error
+    }
+  }
 
-  // Cerrar sesión
-  const logout = (): Promise<void> => {
-    return signOut(auth);
-  };
+  const signInWithGoogle = async (): Promise<UserCredential> => {
+    try {
+      const userCredential = await signInWithPopup(auth, googleAuthProvider)
+      setUser(userCredential.user)
+      return userCredential
+    } catch (error) {
+      console.error("Error en signInWithGoogle:", error)
+      throw error
+    }
+  }
 
-  const value = {
-    currentUser,
+  const signInWithFacebook = async (): Promise<UserCredential> => {
+    try {
+      const userCredential = await signInWithPopup(auth, facebookAuthProvider)
+      setUser(userCredential.user)
+      return userCredential
+    } catch (error) {
+      console.error("Error en signInWithFacebook:", error)
+      throw error
+    }
+  }
+
+  const logout = async (): Promise<void> => {
+    try {
+      await signOut(auth)
+      setUser(null)
+    } catch (error) {
+      console.error("Error en logout:", error)
+      throw error
+    }
+  }
+
+  const value: AuthContextType = {
+    user,
+    currentUser: user, // Alias para mantener compatibilidad
+    loading,
     signup,
-    login,
+    signin,
+    login: signin, // Alias para mantener compatibilidad
     signInWithGoogle,
     signInWithFacebook,
-    logout
-  };
-  
+    logout,
+  }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
-  
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
 
-};
+export const useAuth = (): AuthContextType => {
+  return useContext(AuthContext)
+}

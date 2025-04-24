@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { FaArrowLeft } from 'react-icons/fa';
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
@@ -16,6 +16,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Car, MapPin, Star, Clock, Upload, Save, User } from "lucide-react"
 
 export default function MiPerfilPage() {
+  const handleBack = () => {
+    window.history.back();
+  };
   const { currentUser } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -105,10 +108,16 @@ export default function MiPerfilPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
+      <button
+        onClick={handleBack}
+        className="absolute top-7 right-4 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+      >
+        <FaArrowLeft className="text-xl text-gray-700" />
+      </button>
       <h1 className="text-3xl font-bold mb-6">Mi Perfil</h1>
       <Tabs defaultValue="perfil" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="perfil">Información Personal</TabsTrigger>
+          <TabsTrigger value="perfil">Información</TabsTrigger>
           <TabsTrigger value="vehiculos">Mis Vehículos</TabsTrigger>
           <TabsTrigger value="historial">Historial</TabsTrigger>
         </TabsList>

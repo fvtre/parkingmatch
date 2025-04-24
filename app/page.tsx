@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ParkingHero } from "@/components/parking-hero"
@@ -8,8 +10,20 @@ import { Footer } from "@/components/footer"
 import ParkingMap from "@/components/parking-map"
 import ParkingList from "@/components/parking-list"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
 
 export default function Home() {
+  const { currentUser } = useAuth()
+  const router = useRouter()
+
+  // Redirigir al dashboard si está autenticado
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/buscar-estacionamiento")
+    }
+  }, [currentUser, router])
   return (
     <div className="flex flex-col min-h-screen">
       <header className="border-b">
@@ -49,24 +63,6 @@ export default function Home() {
 
       <main className="flex-1">
         <ParkingHero />
-
-        {/* Sección Lista de Estacionamientos */}
-        <section className="container px-4 md:px-6 py-12">
-          <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-1 gap-6">
-            {/* Lista de estacionamientos */}
-            <div className="w-full col-span-1">
-              <Card className="h-[300px] md:h-[400px] overflow-hidden">
-                <CardHeader>
-                  <CardTitle>Lugares disponibles</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0 overflow-y-auto h-full">
-                  <ParkingList />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
         <HowItWorks />
         <Features />
         <Testimonials />
