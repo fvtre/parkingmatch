@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "parkmatch",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "uuid": "^9.0.1",
     "@capacitor/android": "^7.2.0",
     "@capacitor/browser": "^7.0.1",
     "@capacitor/cli": "^7.2.0",

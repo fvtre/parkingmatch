@@ -14,10 +14,10 @@ export function Footer() {
             />
               <span className="text-xl font-bold">ParkMatch</span>
             </Link>
-            <p className="text-sm text-gray-500">Connecting drivers to make parking easier and more efficient.</p>
+            <p className="text-sm text-gray-500">Conectando conductores para hacer el estacionamiento más fácil y eficiente.</p>
           </div>
           <div>
-            <h3 className="text-lg font-medium mb-4">Company</h3>
+            <h3 className="text-lg font-medium mb-4">Compañia</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-sm text-gray-500 hover:text-blue-600">

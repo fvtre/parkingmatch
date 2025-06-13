@@ -52,6 +52,9 @@ const ChatDialog = dynamic(() => import("@/components/chatdialog"), {
   loading: () => <p>Cargando chat...</p>,
 })
 
+// Importar el componente de confirmación de reserva
+import ReservaConfirmada from "@/components/reservaconfirmada"
+
 interface Estacionamiento {
   id: string
   propietarioId: string
@@ -88,28 +91,75 @@ export default function BuscarEstacionamiento() {
   const [reservaDialogOpen, setReservaDialogOpen] = useState(false)
   const [estacionamientoSeleccionado, setEstacionamientoSeleccionado] = useState<Estacionamiento | null>(null)
   const [reservando, setReservando] = useState(false)
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false)
 
   // Obtener ubicación del usuario al cargar
   useEffect(() => {
     if (navigator.geolocation) {
+      // Mostrar mensaje de carga
+      toast({
+        title: "Obteniendo ubicación",
+        description: "Estamos detectando tu ubicación exacta...",
+      })
+
+      // Opciones de alta precisión
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUbicacionUsuario({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           })
+
+          toast({
+            title: "Ubicación detectada",
+            description: "Tu ubicación ha sido detectada correctamente.",
+          })
         },
         (error) => {
           console.error("Error obteniendo ubicación:", error)
+
+          // Mensajes de error específicos
+          let errorMsg = "No se pudo obtener tu ubicación."
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMsg = "Permiso de ubicación denegado. Por favor, habilita el acceso a tu ubicación."
+              break
+            case error.POSITION_UNAVAILABLE:
+              errorMsg = "La información de ubicación no está disponible."
+              break
+            case error.TIMEOUT:
+              errorMsg = "Se agotó el tiempo para obtener tu ubicación."
+              break
+          }
+
+          toast({
+            variant: "destructive",
+            title: "Error de ubicación",
+            description: errorMsg,
+          })
+
           // Ubicación por defecto (Santiago Centro)
           setUbicacionUsuario({ lat: -33.4489, lng: -70.6693 })
         },
+        options,
       )
     } else {
       // Ubicación por defecto si no hay geolocalización
       setUbicacionUsuario({ lat: -33.4489, lng: -70.6693 })
+
+      toast({
+        variant: "destructive",
+        title: "Geolocalización no soportada",
+        description: "Tu navegador no soporta geolocalización.",
+      })
     }
-  }, [])
+  }, [toast])
 
   // Función para calcular distancia entre dos puntos (fórmula de Haversine)
   const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -256,6 +306,52 @@ export default function BuscarEstacionamiento() {
     }
   }
 
+  // Añadir esta función después de buscarPorDireccion
+  const refrescarUbicacion = () => {
+    if (navigator.geolocation) {
+      setLoading(true)
+      toast({
+        title: "Actualizando ubicación",
+        description: "Obteniendo tu ubicación exacta...",
+      })
+
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUbicacionUsuario({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+          setLoading(false)
+
+          toast({
+            title: "Ubicación actualizada",
+            description: "Tu ubicación ha sido actualizada correctamente.",
+          })
+
+          // Buscar estacionamientos con la nueva ubicación
+          setTimeout(buscarEstacionamientos, 500)
+        },
+        (error) => {
+          console.error("Error actualizando ubicación:", error)
+          setLoading(false)
+
+          toast({
+            variant: "destructive",
+            title: "Error al actualizar ubicación",
+            description: "No se pudo actualizar tu ubicación. Verifica los permisos de tu navegador.",
+          })
+        },
+        options,
+      )
+    }
+  }
+
   // Manejar cambio en características
   const toggleCaracteristica = (caracteristica: string) => {
     setCaracteristicasFiltro((prev) =>
@@ -333,12 +429,11 @@ export default function BuscarEstacionamiento() {
       )
       aplicarFiltros()
 
-      toast({
-        title: "Reserva exitosa",
-        description: "Has reservado este estacionamiento correctamente",
-      })
-
+      // Cerrar el diálogo de reserva
       setReservaDialogOpen(false)
+
+      // Mostrar la confirmación que abrirá automáticamente el chat y la ruta
+      setMostrarConfirmacion(true)
     } catch (error) {
       console.error("Error al reservar estacionamiento:", error)
       toast({
@@ -372,21 +467,12 @@ export default function BuscarEstacionamiento() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => {
-                  if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition((position) => {
-                      setUbicacionUsuario({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                      })
-                    })
-                  }
-                }}
+                onClick={refrescarUbicacion}
                 className="flex items-center gap-2"
                 disabled={loading}
               >
                 <MapPin size={18} />
-                Mi ubicación
+                Actualizar mi ubicación
               </Button>
             </div>
 
@@ -443,7 +529,7 @@ export default function BuscarEstacionamiento() {
       </Card>
 
       {/* Contador de resultados y selector de vista */}
-      <div className="w-full">
+      <div className="flex justify-between items-center">
         <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "list" | "map")}>
           <TabsList>
             <TabsTrigger value="list" className="flex items-center gap-1">
@@ -457,9 +543,9 @@ export default function BuscarEstacionamiento() {
           </TabsList>
 
           {/* Vista de mapa */}
-          <TabsContent value="map" className="mt-0">
+          <TabsContent value="map" className="mt-3">
             {ubicacionUsuario && (
-              <div className="h-[600px] w-full rounded-lg overflow-hidden border">
+              <div className="w-full max-w-[1200px] h-[500px] sm:h-[500px] md:h-[500px] lg:h-[500px] mx-auto rounded-lg overflow-hidden border bg-gray-100">
                 <MapWithNoSSR
                   center={ubicacionUsuario}
                   zoom={14}
@@ -469,7 +555,7 @@ export default function BuscarEstacionamiento() {
                     title: e.direccion,
                     price: e.precio,
                   }))}
-                  radio={radio * 1000}
+                  radio={radio * 1000} // Convertir a metros
                   onMarkerClick={(id) => {
                     const estacionamiento = estacionamientosFiltrados.find((e) => e.id === id)
                     if (estacionamiento) {
@@ -478,13 +564,12 @@ export default function BuscarEstacionamiento() {
                     }
                   }}
                 />
-
               </div>
             )}
           </TabsContent>
 
           {/* Vista de lista */}
-          <TabsContent value="list" className="mt-0">
+          <TabsContent value="list" className="mt-3">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <div className="text-center">
@@ -630,41 +715,33 @@ export default function BuscarEstacionamiento() {
       {/* Diálogo de ruta */}
       {estacionamientoSeleccionado && (
         <Dialog open={routeDialogOpen} onOpenChange={setRouteDialogOpen}>
-          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Cómo llegar</DialogTitle>
-              <DialogDescription>Ruta hacia {estacionamientoSeleccionado.direccion}</DialogDescription>
-            </DialogHeader>
-
-            <div className="h-[500px] w-full rounded-lg overflow-hidden border mt-4">
-              {ubicacionUsuario ? (
-                <RouteMap
-                  origin={ubicacionUsuario}
-                  destination={{ lat: estacionamientoSeleccionado.latitud, lng: estacionamientoSeleccionado.longitud }}
-                  zoom={13}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                  <p>Permitir acceso a tu ubicación para mostrar la ruta</p>
-                </div>
-              )}
-            </div>
-
-            <DialogFooter className="mt-4">
-              <Button onClick={() => setRouteDialogOpen(false)}>Cerrar</Button>
+          <DialogContent className="max-w-full h-[90vh] p-0 overflow-hidden">
+            <div className="relative h-full">
               <Button
                 variant="outline"
-                onClick={() => {
-                  // Abrir en Google Maps
-                  if (estacionamientoSeleccionado) {
-                    const url = `https://www.google.com/maps/dir/?api=1&destination=${estacionamientoSeleccionado.latitud},${estacionamientoSeleccionado.longitud}`
-                    window.open(url, "_blank")
-                  }
-                }}
+                className="absolute top-2 right-2 z-50 rounded-full bg-white"
+                onClick={() => setRouteDialogOpen(false)}
               >
-                Abrir en Google Maps
+                X
               </Button>
-            </DialogFooter>
+
+              <div className="h-full w-full">
+                {ubicacionUsuario ? (
+                  <RouteMap
+                    origin={ubicacionUsuario}
+                    destination={{
+                      lat: estacionamientoSeleccionado.latitud,
+                      lng: estacionamientoSeleccionado.longitud,
+                    }}
+                    zoom={16}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                    <p>Permitir acceso a tu ubicación para mostrar la ruta</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -710,6 +787,22 @@ export default function BuscarEstacionamiento() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Confirmación de reserva */}
+      {mostrarConfirmacion && estacionamientoSeleccionado && (
+        <ReservaConfirmada
+          onChatClick={() => {
+            setChatOpen(true)
+            setMostrarConfirmacion(false)
+          }}
+          onRouteClick={() => {
+            setRouteDialogOpen(true)
+            setMostrarConfirmacion(false)
+          }}
+          autoOpenChat={true}
+          autoOpenRoute={true}
+        />
       )}
     </div>
   )

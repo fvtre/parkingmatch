@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "784445877686",
+    "project_id": "parkingmatch-95e32",
+    "storage_bucket": "parkingmatch-95e32.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784445877686:android:65d1263f46616e020be517",
+        "android_client_info": {
+          "package_name": "com.parkmatch.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784445877686-s783961o9ve4o9alrv7qo9bfnt33t81a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parkmatch.app",
+            "certificate_hash": "8313a76772d2addf095ffeff03d71a94c8673221"
+          }
+        },
+        {
+          "client_id": "784445877686-kkkg1k9nc6llcmj249q63403db743m5h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeiaIE79T7ZMZSmANzyTPf0zzcXtD2wlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784445877686-kkkg1k9nc6llcmj249q63403db743m5h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

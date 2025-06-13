@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
 import { cn } from "@/lib/utils"
-import { Search, MapPin, Car, User, LogOut, Settings, ChevronUp, X, MessageCircle } from "lucide-react"
+import { Search, MapPin, Car, User, LogOut, Settings, ChevronDown, ChevronUp, X, MessageCircle } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,7 +82,7 @@ export default function TabBar() {
       icon: <MapPin className="h-5 w-5" />,
     },
     {
-      name: "Mis Spots",
+      name: "Spots",
       href: "/mis-estacionamientos",
       icon: <Car className="h-5 w-5" />,
     },
@@ -116,9 +116,9 @@ export default function TabBar() {
   return (
     <>
       {/* TabBar para móvil - Flotante en la parte inferior */}
-      <div className="fixed bottom-4 left-0 right-0 z-50 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-gradient-to-r from-[#08aadb] to-[#f67905]">
         <div className="mx-auto max-w-md px-4">
-          <div className="flex items-center justify-between rounded-full bg-white shadow-lg border p-2">
+          <div className="flex items-center justify-between p-1 w-full">
             {tabs.map((tab) => {
               if (tab.isDropdown) {
                 return (
@@ -152,7 +152,7 @@ export default function TabBar() {
 
                         <div className="space-y-2">
                           <Link
-                            href="/perfil"
+                            href="/mi-perfil"
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100"
                             onClick={() => setProfileOpen(false)}
                           >
@@ -161,7 +161,7 @@ export default function TabBar() {
                           </Link>
 
                           <Link
-                            href="/configuracion"
+                            href="/settings"
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100"
                             onClick={() => setProfileOpen(false)}
                           >
@@ -270,13 +270,13 @@ export default function TabBar() {
                     </div>
                   </div>
                   <DropdownMenuItem asChild>
-                    <Link href="/perfil" className="cursor-pointer">
+                    <Link href="/mi-perfil" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       <span>Mi Perfil</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/configuracion" className="cursor-pointer">
+                    <Link href="/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Configuración</span>
                     </Link>

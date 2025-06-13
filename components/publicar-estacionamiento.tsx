@@ -5,9 +5,8 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
-import { db, storage } from "@/lib/firebase"
+import { db } from "@/lib/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -15,9 +14,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Clock } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import ImageUploader from "@/components/imageuploader"
 
 export default function PublicarEstacionamiento() {
-  const { currentUser } = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -34,7 +34,7 @@ export default function PublicarEstacionamiento() {
       iluminacion: false,
     },
   })
-  const [imagenes, setImagenes] = useState<FileList | null>(null)
+  const [imagenesUrls, setImagenesUrls] = useState<string[]>([])
   const [ubicacionActual, setUbicacionActual] = useState(false)
 
   // Obtener ubicación actual
@@ -79,18 +79,16 @@ export default function PublicarEstacionamiento() {
     })
   }
 
-  // Manejar cambios en imágenes
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setImagenes(e.target.files)
-    }
+  // Manejar imágenes subidas
+  const handleImagesUploaded = (urls: string[]) => {
+    setImagenesUrls(urls)
   }
 
   // Enviar formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!currentUser) {
+    if (!user) {
       setError("Debes iniciar sesión para publicar un estacionamiento")
       router.push("/login")
       return
@@ -105,22 +103,19 @@ export default function PublicarEstacionamiento() {
         throw new Error("Por favor completa todos los campos obligatorios")
       }
 
-      // Subir imágenes a Firebase Storage
-      const imagenesUrls: string[] = []
+      // Verificar si hay imágenes seleccionadas pero no confirmadas
+      const imageUploader = document.getElementById("image-uploader-submit")
+      if (imageUploader) {
+        // Simular clic en el botón de confirmar imágenes
+        imageUploader.click()
 
-      if (imagenes) {
-        for (let i = 0; i < imagenes.length; i++) {
-          const imagen = imagenes[i]
-          const storageRef = ref(storage, `estacionamientos/${currentUser.uid}/${Date.now()}_${imagen.name}`)
-          const snapshot = await uploadBytes(storageRef, imagen)
-          const url = await getDownloadURL(snapshot.ref)
-          imagenesUrls.push(url)
-        }
+        // Esperar un momento para que se complete la simulación
+        await new Promise((resolve) => setTimeout(resolve, 1000))
       }
 
-      // Crear documento en Firestore
+      // Crear documento en Firestore (sin URLs reales de imágenes)
       const estacionamientoData = {
-        propietarioId: currentUser.uid,
+        propietarioId: user.uid,
         direccion: formData.direccion,
         latitud: Number.parseFloat(formData.latitud),
         longitud: Number.parseFloat(formData.longitud),
@@ -131,14 +126,14 @@ export default function PublicarEstacionamiento() {
         caracteristicas: Object.entries(formData.caracteristicas)
           .filter(([_, value]) => value)
           .map(([key]) => key),
-        imagenes: imagenesUrls,
+        imagenes: [], // No guardamos URLs reales ya que no tenemos Firebase Storage
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       }
 
       const docRef = await addDoc(collection(db, "estacionamientos"), estacionamientoData)
 
-      alert("Estacionamiento publicado con éxito!")
+      alert("Estacionamiento publicado con éxito! (Las imágenes se muestran solo localmente)")
       router.push("/mis-estacionamientos")
     } catch (error) {
       console.error("Error al publicar estacionamiento:", error)
@@ -151,6 +146,7 @@ export default function PublicarEstacionamiento() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
+        <CardTitle className="text-2xl font-bold text-center">Publicar Estacionamiento</CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
@@ -293,19 +289,21 @@ export default function PublicarEstacionamiento() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="imagenes" className="font-medium">
-              Imágenes (opcional)
-            </label>
-            <Input
-              id="imagenes"
-              name="imagenes"
-              type="file"
-              onChange={handleImageChange}
-              multiple
-              accept="image/*"
-              className="cursor-pointer"
-            />
-            <p className="text-sm text-gray-500">Puedes subir hasta 5 imágenes</p>
+            <label className="font-medium">Imágenes del estacionamiento</label>
+            {user && (
+              <>
+                <ImageUploader
+                  onImagesUploaded={handleImagesUploaded}
+                  userId={user.uid}
+                  maxImages={5}
+                  folder="estacionamientos"
+                />
+                <p className="text-sm text-amber-600 mt-2">
+                  ⚠️ Nota: Las imágenes solo se mostrarán localmente. Para guardarlas permanentemente, se requiere
+                  habilitar Firebase Storage.
+                </p>
+              </>
+            )}
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

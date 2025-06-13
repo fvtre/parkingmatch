@@ -72,12 +72,27 @@ const ParkingMap = ({ center, zoom, estacionamientos, radio, onMarkerClick }: Pa
 
       // Crear marcadores para los estacionamientos
       estacionamientos.forEach((estacionamiento) => {
+        // Crear un icono personalizado con una "E"
+        const iconoEstacionamiento = {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          fillColor: "#3B82F6",
+          fillOpacity: 1,
+          strokeColor: "#FFFFFF",
+          strokeWeight: 2,
+          scale: 12,
+          labelOrigin: new window.google.maps.Point(0, 0),
+        }
+
         const marker = new window.google.maps.Marker({
           position: estacionamiento.position,
           map: googleMap,
           title: `${estacionamiento.title} - ${estacionamiento.price}/hora`,
-          icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          icon: iconoEstacionamiento,
+          label: {
+            text: "E",
+            color: "#FFFFFF",
+            fontWeight: "bold",
+            fontSize: "12px",
           },
         })
 
@@ -93,7 +108,7 @@ const ParkingMap = ({ center, zoom, estacionamientos, radio, onMarkerClick }: Pa
           content: `
             <div style="padding: 8px;">
               <h3 style="margin: 0 0 8px; font-weight: bold;">${estacionamiento.title}</h3>
-              <p style="margin: 0; color: green; font-weight: bold;">${estacionamiento.price}/hora</p>
+              <p style="margin: 0; color: green; font-weight: bold;">$${estacionamiento.price}/hora</p>
             </div>
           `,
         })

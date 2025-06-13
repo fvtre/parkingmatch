@@ -8,8 +8,7 @@ export function HowItWorks() {
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Cómo funciona ParkMatch</h2>
             <p className="max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mx-auto">
-              Our platform connects drivers leaving parking spots with those looking for one, saving you time and
-              frustration.
+            Nuestra plataforma conecta a los conductores que dejan un espacio de estacionamiento con quienes buscan una, ahorrándole tiempo y frustraciones.
             </p>
           </div>
         </div>
@@ -18,29 +17,29 @@ export function HowItWorks() {
             <div className="p-4 bg-blue-100 rounded-full">
               <Car className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-xl font-bold">Register Your Vehicle</h3>
-            <p className="text-gray-500">Create an account and add your vehicle details to get started.</p>
+            <h3 className="text-xl font-bold">Registra tu vehiculo</h3>
+            <p className="text-gray-500">Cree una cuenta y agregue los detalles de su vehículo para comenzar.</p>
           </div>
           <div className="flex flex-col items-center text-center space-y-3">
             <div className="p-4 bg-blue-100 rounded-full">
               <MapPin className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-xl font-bold">Share Your Location</h3>
-            <p className="text-gray-500">Let others know when you're leaving a parking spot or looking for one.</p>
+            <h3 className="text-xl font-bold">Comparte tu ubicación</h3>
+            <p className="text-gray-500">Hazle saber a los demás cuando estás a punto de abandonar un lugar de estacionamiento o de buscar uno.</p>
           </div>
           <div className="flex flex-col items-center text-center space-y-3">
             <div className="p-4 bg-blue-100 rounded-full">
               <Clock className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-xl font-bold">Get Matched in Real-Time</h3>
-            <p className="text-gray-500">Our algorithm matches drivers leaving with those looking for spots.</p>
+            <h3 className="text-xl font-bold">Encuentra espacio en tiempo real</h3>
+            <p className="text-gray-500">Nuestro algoritmo combina a los conductores que salen con aquellos que buscan lugares.</p>
           </div>
           <div className="flex flex-col items-center text-center space-y-3">
             <div className="p-4 bg-blue-100 rounded-full">
               <Handshake className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-xl font-bold">Complete the Exchange</h3>
-            <p className="text-gray-500">Coordinate the handover and enjoy your parking spot or be on your way.</p>
+            <h3 className="text-xl font-bold">Completa el intercambio</h3>
+            <p className="text-gray-500">Coordina la entrega y disfruta de tu lugar de estacionamiento o continúa tu camino.</p>
           </div>
         </div>
       </div>

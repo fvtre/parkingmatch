@@ -7,9 +7,9 @@ export function Testimonials() {
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">What Our Users Say</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Lo que dicen nuestros usuarios</h2>
             <p className="max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mx-auto">
-              Don't just take our word for it. Here's what drivers like you think about ParkMatch.
+              No te fíes solo de nuestra palabra. Esto es lo que otros conductores como tú opinan sobre ParkMatch.
             </p>
           </div>
         </div>
@@ -22,8 +22,7 @@ export function Testimonials() {
                 ))}
               </div>
               <p className="text-gray-500 mb-4">
-                "I used to spend 30 minutes looking for parking downtown. With ParkMatch, I find a spot in under 5
-                minutes. Game changer!"
+                Antes pasaba 30 minutos buscando aparcamiento en el centro. Con ParkMatch, encuentro un sitio en menos de 5 minutos. ¡Una revolución!
               </p>
               <div className="flex items-center space-x-4">
                 <div className="rounded-full bg-gray-100 w-12 h-12 flex items-center justify-center">
@@ -44,8 +43,7 @@ export function Testimonials() {
                 ))}
               </div>
               <p className="text-gray-500 mb-4">
-                "As someone who commutes daily, this app has saved me countless hours and reduced my stress levels
-                significantly."
+                Como alguien que viaja a diario, esta aplicación me ha ahorrado incontables horas y ha reducido significativamente mis niveles de estrés.
               </p>
               <div className="flex items-center space-x-4">
                 <div className="rounded-full bg-gray-100 w-12 h-12 flex items-center justify-center">
@@ -67,8 +65,7 @@ export function Testimonials() {
                 <Star className="h-5 w-5 text-gray-300" />
               </div>
               <p className="text-gray-500 mb-4">
-                "The matching algorithm works surprisingly well. I've been able to find parking near my office
-                consistently."
+                El algoritmo de coincidencia funciona sorprendentemente bien. He encontrado aparcamiento cerca de mi oficina constantemente.
               </p>
               <div className="flex items-center space-x-4">
                 <div className="rounded-full bg-gray-100 w-12 h-12 flex items-center justify-center">

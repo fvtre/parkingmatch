@@ -10,17 +10,16 @@ export function ParkingHero() {
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Find Parking Spots in Real-Time
+                Encuentra lugares de estacionamiento en tiempo real
               </h1>
               <p className="max-w-[600px] text-gray-500 md:text-xl">
-                Connect with drivers leaving their spots and save time finding parking. The smart way to park in busy
-                areas.
+              Conecta con los conductores que dejan sus estacionamientos y ahorra tiempo buscando aparcamiento. La forma inteligente de aparcar en zonas concurridas.
               </p>
             </div>
           </div>
           <div className="flex items-center justify-center">
             <div className="relative w-full w-[600px] h-[600px]aspect-video rounded-xl overflow-hidden shadow-2xl">
-              <ParkingMap /> {/* Aquí se coloca el mapa en lugar de la imagen */}
+            <ParkingMap />
             </div>
           </div>
         </div>
